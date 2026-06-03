@@ -1,10 +1,3 @@
-// ============================================================
-// DEMO SIMULASI - Tugas 3: Pencarian Data Karyawan & Agregasi
-// Menjalankan semua query operator & aggregation pipeline
-// tanpa memerlukan koneksi MongoDB
-// ============================================================
-
-// ---- DATA DUMMY (12 karyawan) --------------------------------
 const karyawan = [
   { nama: "James Carter",    divisi: "IT",        gaji: 9500000,  status: "Tetap",   tahun_masuk: 2018 },
   { nama: "Emily Watson",    divisi: "Finance",   gaji: 8200000,  status: "Tetap",   tahun_masuk: 2019 },
@@ -23,7 +16,6 @@ const karyawan = [
 const rupiah = (n) => "Rp " + n.toLocaleString("id-ID");
 const separator = "─".repeat(60);
 
-// ---- TAMPILKAN SEMUA DATA ------------------------------------
 console.log("\n" + separator);
 console.log("📋  SEMUA DATA KARYAWAN (12 data)");
 console.log(separator);
@@ -39,10 +31,8 @@ karyawan.forEach((k, i) => {
   );
 });
 
-// ============================================================
 // QUERY 1: Karyawan Tetap DAN gaji > 7.000.000
-// MongoDB: { $and: [{ status: "Tetap" }, { gaji: { $gt: 7000000 } }] }
-// ============================================================
+
 console.log("\n" + separator);
 console.log("🔍  QUERY 1: Status = Tetap AND Gaji > 7.000.000");
 console.log("    MongoDB Query: { $and: [{ status: 'Tetap' }, { gaji: { $gt: 7000000 } }] }");
@@ -59,10 +49,8 @@ query1.forEach((k) => {
   );
 });
 
-// ============================================================
 // QUERY 2: Karyawan divisi "IT" ATAU "Finance"
-// MongoDB: { divisi: { $in: ["IT", "Finance"] } }
-// ============================================================
+
 console.log("\n" + separator);
 console.log('🔍  QUERY 2: Divisi = "IT" OR "Finance"');
 console.log('    MongoDB Query: { divisi: { $in: ["IT", "Finance"] } }');
@@ -79,22 +67,14 @@ query2.forEach((k) => {
   );
 });
 
-// ============================================================
-// AGGREGATION PIPELINE:
-// Tahap 1 - $match  : hanya karyawan status "Tetap"
-// Tahap 2 - $group  : kelompokkan per divisi
-// Tahap 3 - $sort   : urutkan rata-rata gaji tertinggi (BONUS)
-// ============================================================
 console.log("\n" + separator);
 console.log("📊  AGGREGATION PIPELINE: Laporan Gaji per Divisi");
 console.log("    Pipeline: $match → $group → $sort (bonus)");
 console.log(separator);
 
-// Tahap 1: $match - hanya karyawan Tetap
 const stage1_match = karyawan.filter((k) => k.status === "Tetap");
 console.log(`\n  ▶ Tahap 1 [$match] status:"Tetap" → ${stage1_match.length} dokumen lolos`);
 
-// Tahap 2: $group - kelompokkan per divisi
 const grouped = {};
 stage1_match.forEach((k) => {
   if (!grouped[k.divisi]) {
@@ -117,11 +97,9 @@ let stage2_group = Object.entries(grouped).map(([divisi, val]) => ({
 
 console.log(`  ▶ Tahap 2 [$group]   grouped by divisi → ${stage2_group.length} grup`);
 
-// Tahap 3 (BONUS): $sort - urutkan rata-rata gaji tertinggi
 const stage3_sort = stage2_group.sort((a, b) => b.rata_rata_gaji - a.rata_rata_gaji);
 console.log(`  ▶ Tahap 3 [$sort]    rata_rata_gaji: -1 (tertinggi ke terendah)\n`);
 
-// Tampilkan hasil
 console.log(
   "  Divisi      | Jml | Rata-rata Gaji  | Total Gaji      | Tertinggi     | Terendah"
 );

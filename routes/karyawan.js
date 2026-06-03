@@ -2,10 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Karyawan = require("../models/Karyawan");
 
-// ============================================================
-// ENDPOINT 1: GET semua karyawan
 // GET /api/karyawan
-// ============================================================
 router.get("/", async (req, res) => {
   try {
     const data = await Karyawan.find().sort({ nama: 1 });
@@ -19,11 +16,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ============================================================
-// ENDPOINT 2: Karyawan status "Tetap" DAN gaji > 7.000.000
 // GET /api/karyawan/tetap-gaji-tinggi
-// Query Operator: $and, $gt
-// ============================================================
 router.get("/tetap-gaji-tinggi", async (req, res) => {
   try {
     const data = await Karyawan.find({
@@ -45,11 +38,7 @@ router.get("/tetap-gaji-tinggi", async (req, res) => {
   }
 });
 
-// ============================================================
-// ENDPOINT 3: Karyawan dari divisi "IT" ATAU "Finance"
 // GET /api/karyawan/divisi-it-finance
-// Query Operator: $in
-// ============================================================
 router.get("/divisi-it-finance", async (req, res) => {
   try {
     const data = await Karyawan.find({
@@ -68,19 +57,13 @@ router.get("/divisi-it-finance", async (req, res) => {
   }
 });
 
-// ============================================================
-// ENDPOINT 4: Laporan agregasi per divisi (hanya karyawan Tetap)
 // GET /api/karyawan/laporan-divisi
-// Aggregation Pipeline: $match → $group → $sort (bonus)
-// ============================================================
 router.get("/laporan-divisi", async (req, res) => {
   try {
     const hasil = await Karyawan.aggregate([
-      // Tahap 1 - $match: hanya karyawan berstatus "Tetap"
       {
         $match: { status: "Tetap" },
       },
-      // Tahap 2 - $group: kelompokkan per divisi, hitung jumlah & rata-rata gaji
       {
         $group: {
           _id: "$divisi",
@@ -91,11 +74,9 @@ router.get("/laporan-divisi", async (req, res) => {
           gaji_terendah: { $min: "$gaji" },
         },
       },
-      // Tahap 3 (BONUS) - $sort: urutkan berdasarkan rata-rata gaji tertinggi
       {
         $sort: { rata_rata_gaji: -1 },
       },
-      // Tahap 4 - $project: rapikan output
       {
         $project: {
           _id: 0,
@@ -121,5 +102,6 @@ router.get("/laporan-divisi", async (req, res) => {
   }
 });
 
+module.exports = router;
 
 

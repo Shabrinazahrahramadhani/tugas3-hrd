@@ -6,20 +6,16 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI =
   process.env.MONGO_URI || "mongodb://localhost:27017/hrd_perusahaan";
 
-// Middleware
 app.use(express.json());
 
-// Koneksi MongoDB
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("✅ Terhubung ke MongoDB:", MONGO_URI))
   .catch((err) => console.error("❌ Gagal koneksi MongoDB:", err.message));
 
-// Routes
 const karyawanRoutes = require("./routes/karyawan");
 app.use("/api/karyawan", karyawanRoutes);
 
-// Root endpoint - dokumentasi API
 app.get("/", (req, res) => {
   res.json({
     judul: "Tugas 3 - Sistem HRD Karyawan",
